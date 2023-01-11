@@ -5,9 +5,7 @@ namespace TARge21Shop.Core.ServiceInterface
 {
     public interface ICarsServices
     {
-        Task<Car> Add(CarDto dto);
-
-        Task<Car> GetUpdate(Guid id);
+        Task<Car> Create(CarDto dto);
 
         Task<Car> Update(CarDto dto);
 

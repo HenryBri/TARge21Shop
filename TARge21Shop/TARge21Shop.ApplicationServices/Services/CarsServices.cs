@@ -17,9 +17,9 @@ namespace TARge21Shop.ApplicationServices.Services
             _context = context;
         }
 
-        public async Task<Car> Add(CarDto dto)
+        public async Task<Car> Create(CarDto dto)
         {
-            var domain = new Car()
+            var car = new Car()
             {
                 Id = Guid.NewGuid(),
                 Brand = dto.Brand,
@@ -34,14 +34,14 @@ namespace TARge21Shop.ApplicationServices.Services
                 MaintanceDate = DateTime.Now
             };
 
-            await _context.Cars.AddAsync(domain);
+            await _context.Cars.AddAsync(car);
             await _context.SaveChangesAsync();
-            return domain;
+            return car;
         }
 
         public async Task<Car> Update(CarDto dto)
         {
-            var domain = new Car()
+            var car = new Car()
             {
                 Id = dto.Id,
                 Brand = dto.Brand,
@@ -56,17 +56,11 @@ namespace TARge21Shop.ApplicationServices.Services
                 MaintanceDate = dto.MaintanceDate
             };
 
-            _context.Cars.Update(domain);
+            _context.Cars.Update(car);
             await _context.SaveChangesAsync();
-            return domain;
+            return car;
 
 
-        }
-        public async Task<Car> GetUpdate(Guid id)
-        {
-            var result = await _context.Cars
-                .FirstOrDefaultAsync(x => x.Id == id);
-            return result;
         }
 
         public async Task<Car> Delete(Guid id)
