@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TARge21Shop.ApplicationServices.Services;
 using TARge21Shop.Core.ServiceInterface;
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<TARge21ShopContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
+builder.Services.AddScoped<ICarsServices, CarsServices>();
 
 
 var app = builder.Build();

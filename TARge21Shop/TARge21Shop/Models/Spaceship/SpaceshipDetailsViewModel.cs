@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using TARge21Shop.Core.Domain;
-
-namespace TARge21Shop.Core.Dto
+﻿namespace TARge21Shop.Models.Spaceship
 {
-    public class SpaceshipDto
+    public class SpaceshipDetailsViewModel
     {
         public Guid? Id { get; set; }
         public string Name { get; set; }

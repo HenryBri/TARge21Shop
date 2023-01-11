@@ -1,11 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-
-namespace TARge21Shop.Core.Domain.Spaceship
+﻿namespace TARge21Shop.Models.Spaceship
 {
-    public class Spaceship
+    public class SpaceshipDeleteViewModel
     {
-        [Key]
         public Guid? Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
