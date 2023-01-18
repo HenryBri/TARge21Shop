@@ -70,6 +70,11 @@ namespace TARge21Shop.Controllers
 				PreviousOwners = vm.PreviousOwners,
 				BuiltDate = vm.BuiltDate,
 				MaintanceDate = vm.MaintanceDate,
+<<<<<<< Updated upstream
+=======
+				CreatedAt = vm.CreatedAt,
+				ModifiedAt = vm.ModifiedAt,
+>>>>>>> Stashed changes
 			};
 
 			var result = await _carsServices.Create(dto);
@@ -106,6 +111,11 @@ namespace TARge21Shop.Controllers
 				PreviousOwners = car.PreviousOwners,
 				BuiltDate = car.BuiltDate,
 				MaintanceDate = car.MaintanceDate,
+<<<<<<< Updated upstream
+=======
+				CreatedAt = car.CreatedAt,
+				ModifiedAt = car.ModifiedAt,
+>>>>>>> Stashed changes
 			};
 
 			return View("CreateUpdate", vm);
@@ -128,6 +138,11 @@ namespace TARge21Shop.Controllers
 				PreviousOwners = vm.PreviousOwners,
 				BuiltDate = vm.BuiltDate,
 				MaintanceDate = vm.MaintanceDate,
+<<<<<<< Updated upstream
+=======
+				CreatedAt = vm.CreatedAt,
+				ModifiedAt = vm.ModifiedAt,
+>>>>>>> Stashed changes
 			};
 
 			var result = await _carsServices.Update(dto);
@@ -164,6 +179,11 @@ namespace TARge21Shop.Controllers
 				PreviousOwners = car.PreviousOwners,
 				BuiltDate = car.BuiltDate,
 				MaintanceDate = car.MaintanceDate,
+<<<<<<< Updated upstream
+=======
+				CreatedAt = car.CreatedAt,
+				ModifiedAt = car.ModifiedAt,
+>>>>>>> Stashed changes
 			};
 
 			return View(vm);
@@ -193,6 +213,11 @@ namespace TARge21Shop.Controllers
 				PreviousOwners = car.PreviousOwners,
 				BuiltDate = car.BuiltDate,
 				MaintanceDate = car.MaintanceDate,
+<<<<<<< Updated upstream
+=======
+				CreatedAt = car.CreatedAt,
+				ModifiedAt = car.ModifiedAt,
+>>>>>>> Stashed changes
 			};
 
 			return View(vm);

@@ -5,13 +5,22 @@
 }
 else
 {
+<<<<<<< Updated upstream
 	<h1>Add</h1>
+=======
+	<h1>Create</h1>
+>>>>>>> Stashed changes
 }
 
 
 <div>
 	<form method="post" enctype="multipart/form-data">
 		<input asp-for="Id" type="hidden" />
+<<<<<<< Updated upstream
+=======
+		<input asp-for="CreatedAt" type="hidden" />
+		<input asp-for="ModifiedAt" type="hidden" />
+>>>>>>> Stashed changes
 
 		<div class="form-group row">
 			<label asp-for="Brand" class="col-sm-2 col-form-label"></label>
@@ -91,10 +100,17 @@ else
 		}
 		else
 		{
+<<<<<<< Updated upstream
 			<input asp-action="add" asp-controller="cars" type="submit" class=" btn btn-outline-primary" value="Add" />
 		}
 
 		<a asp-action="Index" class="btn btn-primary">Index</a>
+=======
+			<input asp-action="create" asp-controller="cars" type="submit" class=" btn btn-primary" value="Create" />
+		}
+
+		<a asp-action="Index" class="btn btn-primary">Back</a>
+>>>>>>> Stashed changes
 
 	</form>
 </div>

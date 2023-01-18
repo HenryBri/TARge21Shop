@@ -17,5 +17,11 @@ namespace TARge21Shop.Core.Domain.Car
         public int PreviousOwners { get; set; }
         public DateTime BuiltDate { get; set; }
         public DateTime MaintanceDate { get; set; }
+<<<<<<< Updated upstream
     }
+=======
+		public DateTime CreatedAt { get; set; }
+		public DateTime ModifiedAt { get; set; }
+	}
+>>>>>>> Stashed changes
 }
