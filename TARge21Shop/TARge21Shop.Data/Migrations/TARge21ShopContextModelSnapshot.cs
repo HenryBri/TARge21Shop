@@ -39,12 +39,9 @@ namespace TARge21Shop.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< Updated upstream
-=======
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
->>>>>>> Stashed changes
                     b.Property<int>("EnginePower")
                         .HasColumnType("int");
 
@@ -62,12 +59,9 @@ namespace TARge21Shop.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-<<<<<<< Updated upstream
-=======
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime2");
 
->>>>>>> Stashed changes
                     b.Property<int>("PreviousOwners")
                         .HasColumnType("int");
 
