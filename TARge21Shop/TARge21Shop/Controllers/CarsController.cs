@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TARge21Shop.Core.Domain.Car;
 using TARge21Shop.Core.Dto;
 using TARge21Shop.Core.ServiceInterface;
@@ -11,15 +12,18 @@ namespace TARge21Shop.Controllers
 	{
 		private readonly TARge21ShopContext _context;
 		private readonly ICarsServices _carsServices;
+		private readonly IFilesServices _filesServices;
 
 		public CarsController
 			(
 				TARge21ShopContext context,
-				ICarsServices carsServices
+				ICarsServices carsServices,
+				IFilesServices filesServices
 			)
 		{
 			_context = context;
 			_carsServices = carsServices;
+			_filesServices = filesServices;
 		}
 
 		public IActionResult Index()
@@ -72,6 +76,14 @@ namespace TARge21Shop.Controllers
 				MaintanceDate = vm.MaintanceDate,
 				CreatedAt = vm.CreatedAt,
 				ModifiedAt = vm.ModifiedAt,
+				Files = vm.Files,
+				Image = vm.Image.Select(x => new FileToDatabaseDto
+				{
+					Id = x.ImageId,
+					ImageData = x.ImageData,
+					ImageTitle = x.ImageTitle,
+					CarId = x.CarId,
+				}).ToArray()
 			};
 
 			var result = await _carsServices.Create(dto);
@@ -95,6 +107,17 @@ namespace TARge21Shop.Controllers
 				return NotFound();
 			}
 
+			var photos = await _context.FileToDatabases
+				.Where(x => x.CarId == id)
+				.Select(y => new ImageViewModel
+				{
+					CarId = y.Id,
+					ImageId = y.Id,
+					ImageData = y.ImageData,
+					ImageTitle = y.ImageTitle,
+					Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(y.ImageData))
+				}).ToArrayAsync();
+
 			var vm = new CarCreateUpdateViewModel()
 			{
 				Id = car.Id,
@@ -111,6 +134,8 @@ namespace TARge21Shop.Controllers
 				CreatedAt = car.CreatedAt,
 				ModifiedAt = car.ModifiedAt,
 			};
+
+			vm.Image.AddRange(photos);
 
 			return View("CreateUpdate", vm);
 		}
@@ -134,6 +159,14 @@ namespace TARge21Shop.Controllers
 				MaintanceDate = vm.MaintanceDate,
 				CreatedAt = vm.CreatedAt,
 				ModifiedAt = vm.ModifiedAt,
+				Files = vm.Files,
+				Image = vm.Image.Select(x => new FileToDatabaseDto
+				{
+					Id = x.ImageId,
+					ImageData = x.ImageData,
+					ImageTitle = x.ImageTitle,
+					CarId = x.CarId,
+				}).ToArray()
 			};
 
 			var result = await _carsServices.Update(dto);
@@ -157,6 +190,17 @@ namespace TARge21Shop.Controllers
 				return NotFound();
 			}
 
+			var photos = await _context.FileToDatabases
+				.Where(x => x.CarId == id)
+				.Select(y => new ImageViewModel
+				{
+					CarId = y.Id,
+					ImageId = y.Id,
+					ImageData = y.ImageData,
+					ImageTitle = y.ImageTitle,
+					Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(y.ImageData))
+				}).ToArrayAsync();
+
 			var vm = new CarDetailsViewModel()
 			{
 				Id = car.Id,
@@ -174,6 +218,8 @@ namespace TARge21Shop.Controllers
 				ModifiedAt = car.ModifiedAt,
 			};
 
+			vm.Image.AddRange(photos);
+
 			return View(vm);
 		}
 
@@ -187,6 +233,17 @@ namespace TARge21Shop.Controllers
 			{
 				return NotFound();
 			}
+
+			var photos = await _context.FileToDatabases
+				.Where(x => x.CarId == id)
+				.Select(y => new ImageViewModel
+				{
+					CarId = y.Id,
+					ImageId = y.Id,
+					ImageData = y.ImageData,
+					ImageTitle = y.ImageTitle,
+					Image = string.Format("data:image/gif;base64,{0}", Convert.ToBase64String(y.ImageData))
+				}).ToArrayAsync();
 
 			var vm = new CarDeleteViewModel()
 			{
@@ -205,6 +262,8 @@ namespace TARge21Shop.Controllers
 				ModifiedAt = car.ModifiedAt,
 			};
 
+			vm.Image.AddRange(photos);
+
 			return View(vm);
 		}
 
@@ -215,6 +274,24 @@ namespace TARge21Shop.Controllers
 			var carId = await _carsServices.Delete(id);
 
 			if (carId == null)
+			{
+				return RedirectToAction(nameof(Index));
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> RemoveImage(ImageViewModel file)
+		{
+			var dto = new FileToDatabaseDto()
+			{
+				Id = file.ImageId
+			};
+
+			var image = await _filesServices.RemoveImage(dto);
+
+			if (image == null)
 			{
 				return RedirectToAction(nameof(Index));
 			}

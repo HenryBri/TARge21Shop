@@ -1,4 +1,6 @@
-﻿namespace TARge21Shop.Core.Dto
+﻿using Microsoft.AspNetCore.Http;
+
+namespace TARge21Shop.Core.Dto
 {
     public class CarDto
     {
@@ -15,5 +17,7 @@
         public DateTime MaintanceDate { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public DateTime ModifiedAt { get; set; }
+		public List<IFormFile> Files { get; set; }
+		public IEnumerable<FileToDatabaseDto> Image { get; set; } = new List<FileToDatabaseDto>();
 	}
 }
