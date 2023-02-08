@@ -23,13 +23,19 @@ namespace TARge21Shop.ApplicationServices.Services
              _context = context;
         }
 
-        public async Task<RealEstate> GetAsync()
-        {
-            //var result = await _context.RealEstates
-            //    .;
+        //public IEnumerable<RealEstate> GetAllRealEstates()
+        //{
+        //       var result = _context.RealEstates
+        //            .OrderByDescending(y => y.CreatedAt)
+        //            .Select(x => new RealEstate
+        //            {
+        //                Id = x.Id,
+        //                Price = x.Price,
+        //            });
 
-            return null;
-        }
+        //    return result;
+
+        //}
 
         public async Task<RealEstate> Create(RealEstateDto dto)
         {
@@ -56,5 +62,49 @@ namespace TARge21Shop.ApplicationServices.Services
             return realEstate;
         }
 
+        public async Task<RealEstate> Update(RealEstateDto dto)
+        {
+            var domain = new RealEstate()
+            {
+                Id = dto.Id,
+                Address = dto.Address,
+                City = dto.City,
+                Region = dto.Region,
+                PostalCode = dto.PostalCode,
+                Country = dto.Country,
+                Phone = dto.Phone,
+                Fax = dto.Fax,
+                Size = dto.Size,
+                Floor = dto.Floor,
+                Price = dto.Price,
+                RoomCount = dto.RoomCount,
+                ModifiedAt = DateTime.Now,
+        };
+
+            _context.RealEstates.Update(domain);
+            await _context.SaveChangesAsync();
+
+            return domain;
+        }
+
+
+        public async Task<RealEstate> Delete(Guid id)
+        {
+            var realestateId = await _context.RealEstates
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            _context.RealEstates.Remove(realestateId);
+            await _context.SaveChangesAsync();
+
+            return realestateId;
+        }
+
+        public async Task<RealEstate> GetAsync(Guid id)
+        {
+            var result = await _context.RealEstates
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return result;
+        }
     }
 }
