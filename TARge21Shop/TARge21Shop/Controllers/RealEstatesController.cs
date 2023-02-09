@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using TARge21Shop.ApplicationServices.Services;
 using TARge21Shop.Core.Dto;
 using TARge21Shop.Core.ServiceInterface;
@@ -67,7 +68,14 @@ namespace TARge21Shop.Controllers
                 PostalCode = vm.PostalCode,
                 RoomCount = vm.RoomCount,
                 CreatedAt = vm.CreatedAt,
-                ModifiedAt = vm.ModifiedAt
+                ModifiedAt = vm.ModifiedAt,
+				Files = vm.Files,
+				FileToApiDtos = vm.FileToApiViewModels.Select(x => new FileToApiDto 
+				{ 
+					Id =x.ImageId,
+					ExistingFilePath = x.FilePath,
+					RealEstateId = x.RealEstateId,
+				}).ToArray()
             };
 
             var result = await _realEstatesServices.Create(dto);
