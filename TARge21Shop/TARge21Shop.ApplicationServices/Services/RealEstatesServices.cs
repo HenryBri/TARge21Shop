@@ -14,13 +14,16 @@ namespace TARge21Shop.ApplicationServices.Services
     public class RealEstatesServices : IRealEstatesServices
     {
         private readonly TARge21ShopContext _context;
+        private readonly IFilesServices _filesServices;
 
         public RealEstatesServices
             (
                 TARge21ShopContext context
+            , IFilesServices filesServices
             )
         {
              _context = context;
+            _filesServices = filesServices;
         }
 
         //public IEnumerable<RealEstate> GetAllRealEstates()
@@ -55,6 +58,8 @@ namespace TARge21Shop.ApplicationServices.Services
             realEstate.RoomCount = dto.RoomCount;
             realEstate.ModifiedAt = DateTime.Now;
             realEstate.CreatedAt = DateTime.Now;
+            _filesServices.FilesToApi(dto, realEstate);
+
 
             await _context.RealEstates.AddAsync(realEstate);
             await _context.SaveChangesAsync();
