@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using TARge21Shop.ApplicationServices.Services;
 using TARge21Shop.Core.Dto;
 using TARge21Shop.Core.ServiceInterface;
@@ -13,15 +12,18 @@ namespace TARge21Shop.Controllers
     {
         private readonly IRealEstatesServices _realEstatesServices;
         private readonly TARge21ShopContext _context;
+        private readonly IFilesServices _filesServices;
 
         public RealEstatesController
             (
                 IRealEstatesServices realEstatesServices,
-                TARge21ShopContext context
+                TARge21ShopContext context,
+                IFilesServices filesServices
             )
         {
             _realEstatesServices = realEstatesServices;
             _context = context;
+            _filesServices = filesServices;
         }
 
         [HttpGet]
@@ -69,13 +71,14 @@ namespace TARge21Shop.Controllers
                 RoomCount = vm.RoomCount,
                 CreatedAt = vm.CreatedAt,
                 ModifiedAt = vm.ModifiedAt,
-				Files = vm.Files,
-				FileToApiDtos = vm.FileToApiViewModels.Select(x => new FileToApiDto 
-				{ 
-					Id =x.ImageId,
-					ExistingFilePath = x.FilePath,
-					RealEstateId = x.RealEstateId,
-				}).ToArray()
+                Files = vm.Files,
+                FileToApiDtos = vm.FileToApiViewModels
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.FilePath,
+                        RealEstateId = x.RealEstateId
+                    }).ToArray()
             };
 
             var result = await _realEstatesServices.Create(dto);
@@ -88,146 +91,194 @@ namespace TARge21Shop.Controllers
             return RedirectToAction("Index", vm);
         }
 
-		[HttpGet]
-		public async Task<IActionResult> Update(Guid id)
-		{
-			var realestate = await _realEstatesServices.GetAsync(id);
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var realEstate = await _realEstatesServices.GetAsync(id);
 
-			if (realestate == null)
-			{
-				return NotFound();
-			}
+            if (realEstate == null)
+            {
+                return NotFound();
+            }
 
-			var vm = new RealEstateCreateUpdateViewModel()
-			{
-				Id = realestate.Id,
-				Address = realestate.Address,
-				City = realestate.City,
-				Country = realestate.Country,
-				Size = realestate.Size,
-				Price = realestate.Price,
-				Floor = realestate.Floor,
-				Region = realestate.Region,
-				Phone = realestate.Phone,
-				Fax = realestate.Fax,
-				PostalCode = realestate.PostalCode,
-				RoomCount = realestate.RoomCount,
-				CreatedAt = realestate.CreatedAt,
-				ModifiedAt = realestate.ModifiedAt
-			};
-
-			return View("CreateUpdate", vm);
-		}
+            var images = await _context.FileToApis
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new FileToApiViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id
+                }).ToArrayAsync();
 
 
-		[HttpPost]
-		public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel vm)
-		{
-			var dto = new RealEstateDto()
-			{
-				Id = vm.Id,
-				Address = vm.Address,
-				City = vm.City,
-				Country = vm.Country,
-				Size = vm.Size,
-				Price = vm.Price,
-				Floor = vm.Floor,
-				Region = vm.Region,
-				Phone = vm.Phone,
-				Fax = vm.Fax,
-				PostalCode = vm.PostalCode,
-				RoomCount = vm.RoomCount,
-				CreatedAt = vm.CreatedAt,
-				ModifiedAt = vm.ModifiedAt
-			};
+            var vm = new RealEstateCreateUpdateViewModel();
 
-			var result = await _realEstatesServices.Update(dto);
-
-			if (result == null)
-			{
-				return RedirectToAction(nameof(Index));
-			}
-
-			return RedirectToAction(nameof(Index), vm);
-		}
+            vm.Id = realEstate.Id;
+            vm.Address = realEstate.Address;
+            vm.City = realEstate.City;
+            vm.Region = realEstate.Region;
+            vm.PostalCode = realEstate.PostalCode;
+            vm.Country = realEstate.Country;
+            vm.Phone = realEstate.Phone;
+            vm.Fax = realEstate.Fax;
+            vm.Size = realEstate.Size;
+            vm.Price = realEstate.Price;
+            vm.Floor = realEstate.Floor;
+            vm.RoomCount = realEstate.RoomCount;
+            vm.CreatedAt = realEstate.CreatedAt;
+            vm.ModifiedAt = realEstate.ModifiedAt;
+            vm.FileToApiViewModels.AddRange(images);
 
 
-		[HttpGet]
-		public async Task<IActionResult> Details(Guid id)
-		{
-			var realestate = await _realEstatesServices.GetAsync(id);
+            return View("CreateUpdate", vm);
+        }
 
-			if (realestate == null)
-			{
-				return NotFound();
-			}
+        [HttpPost]
+        public async Task<IActionResult> Update(RealEstateCreateUpdateViewModel vm)
+        {
+            var dto = new RealEstateDto()
+            {
+                Id = vm.Id,
+                Address = vm.Address,
+                City = vm.City,
+                Region = vm.Region,
+                PostalCode = vm.PostalCode,
+                Country = vm.Country,
+                Phone = vm.Phone,
+                Fax = vm.Fax,
+                Size = vm.Size,
+                Price = vm.Price,
+                Floor = vm.Floor,
+                RoomCount = vm.RoomCount,
+                Files = vm.Files,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt,
+                FileToApiDtos = vm.FileToApiViewModels
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.FilePath,
+                        RealEstateId = x.RealEstateId
+                    }).ToArray()
+            };
 
-			var vm = new RealEstateDetailsViewModel()
-			{
-				Id = realestate.Id,
-				Address = realestate.Address,
-				City = realestate.City,
-				Country = realestate.Country,
-				Size = realestate.Size,
-				Price = realestate.Price,
-				Floor = realestate.Floor,
-				Region = realestate.Region,
-				Phone = realestate.Phone,
-				Fax = realestate.Fax,
-				PostalCode = realestate.PostalCode,
-				RoomCount = realestate.RoomCount,
-				CreatedAt = realestate.CreatedAt,
-				ModifiedAt = realestate.ModifiedAt
-			};
+            var result = await _realEstatesServices.Update(dto);
 
-			return View(vm);
-		}
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index), vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var realEstate = await _realEstatesServices.GetAsync(id);
+
+            if (realEstate == null)
+            {
+                return NotFound();
+            }
+
+            var images = await _context.FileToApis
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new FileToApiViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id
+                }).ToArrayAsync();
+
+            var vm = new RealEstateDetailsViewModel();
+
+            vm.Id = realEstate.Id;
+            vm.Address = realEstate.Address;
+            vm.City = realEstate.City;
+            vm.Region = realEstate.Region;
+            vm.PostalCode = realEstate.PostalCode;
+            vm.Country = realEstate.Country;
+            vm.Phone = realEstate.Phone;
+            vm.Fax = realEstate.Fax;
+            vm.Size = realEstate.Size;
+            vm.Price = realEstate.Price;
+            vm.Floor = realEstate.Floor;
+            vm.RoomCount = realEstate.RoomCount;
+            vm.CreatedAt = realEstate.CreatedAt;
+            vm.ModifiedAt = realEstate.ModifiedAt;
+            vm.FileToApiViewModels.AddRange(images);
+
+            return View(vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var realEstate = await _realEstatesServices.GetAsync(id);
+
+            if (realEstate == null)
+            {
+                return NotFound();
+            }
+
+            var images = await _context.FileToApis
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new FileToApiViewModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id
+                }).ToArrayAsync();
 
 
-		[HttpGet]
-		public async Task<IActionResult> Delete(Guid id)
-		{
-			var realestate = await _realEstatesServices.GetAsync(id);
+            var vm = new RealEstateDeleteViewModel();
 
-			if (realestate == null)
-			{
-				return NotFound();
-			}
+            vm.Id = realEstate.Id;
+            vm.Address = realEstate.Address;
+            vm.City = realEstate.City;
+            vm.Region = realEstate.Region;
+            vm.PostalCode = realEstate.PostalCode;
+            vm.Country = realEstate.Country;
+            vm.Phone = realEstate.Phone;
+            vm.Fax = realEstate.Fax;
+            vm.Size = realEstate.Size;
+            vm.Price = realEstate.Price;
+            vm.Floor = realEstate.Floor;
+            vm.RoomCount = realEstate.RoomCount;
+            vm.CreatedAt = realEstate.CreatedAt;
+            vm.ModifiedAt = realEstate.ModifiedAt;
+            vm.FileToApiViewModels.AddRange(images);
 
-			var vm = new RealEstateDeleteViewModel()
-			{
-				Id = realestate.Id,
-				Address = realestate.Address,
-				City = realestate.City,
-				Country = realestate.Country,
-				Size = realestate.Size,
-				Price = realestate.Price,
-				Floor = realestate.Floor,
-				Region = realestate.Region,
-				Phone = realestate.Phone,
-				Fax = realestate.Fax,
-				PostalCode = realestate.PostalCode,
-				RoomCount = realestate.RoomCount,
-				CreatedAt = realestate.CreatedAt,
-				ModifiedAt = realestate.ModifiedAt
-			};
+            return View(vm);
+        }
 
-			return View(vm);
-		}
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmation(Guid id)
+        {
+            var realEstateId = await _realEstatesServices.Delete(id);
 
+            if (realEstateId == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-		[HttpPost]
-		public async Task<IActionResult> DeleteConfirmation(Guid id)
-		{
-			var realestateId = await _realEstatesServices.Delete(id);
+            return RedirectToAction(nameof(Index));
+        }
 
-			if (realestateId == null)
-			{
-				return RedirectToAction(nameof(Index));
-			}
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(FileToApiViewModel vm)
+        {
+            var dto = new FileToApiDto()
+            {
+                Id = vm.ImageId
+            };
 
-			return RedirectToAction(nameof(Index));
-		}
-	}
+            var image = await _filesServices.RemoveImageFromApi(dto);
+
+            if (image == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }
-
