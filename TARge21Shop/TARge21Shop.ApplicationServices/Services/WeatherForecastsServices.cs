@@ -9,8 +9,7 @@ namespace TARge21Shop.ApplicationServices.Services
     {
         public async Task<WeatherResultDto> WeatherDetail(WeatherResultDto dto)
         {
-            string apikey = "kK3YeMZnnGGFzGi0YDvGtjogbLdSGJ5w";
-            var url = $"http://dataservice.accuweather.com/forecasts/v1/daily/1day/127964?apikey=kK3YeMZnnGGFzGi0YDvGtjogbLdSGJ5w&metric=true";
+            var url = $"http://dataservice.accuweather.com/forecasts/v1/daily/1day/127964?apikey=7WPeWWbXkV362n6qSV3en2KsXoGqbtw4&metric=true";
 
 
             using (WebClient client = new WebClient())
@@ -50,6 +49,31 @@ namespace TARge21Shop.ApplicationServices.Services
                 dto.NightPrecipitationType = weatherInfo.DailyForecasts[0].Night.PrecipitationType;
                 dto.NightPrecipitationIntensity = weatherInfo.DailyForecasts[0].Night.PrecipitationIntensity;
 
+            }
+
+            return dto;
+        }
+
+        public async Task<OpenWeatherResultDto> OpenWeatherDetail(OpenWeatherResultDto dto)
+        {
+            var url = $"https://api.openweathermap.org/data/2.5/weather?q=Elva&APPID=3c8a501925519f2f834306c27bce8a95";
+
+            using (WebClient client = new WebClient())
+            {
+                string json = client.DownloadString(url);
+                var openWeather = new JavaScriptSerializer().Deserialize<OpenWeatherRootDto>(json);
+
+                dto.Country = openWeather.Sys.Country;
+                dto.Id = openWeather.Sys.Id;
+                dto.Name = openWeather.Name;
+                dto.Temp = openWeather.Main.Temp;
+                dto.Feels_like = openWeather.Main.Feels_like;
+                dto.Main = openWeather.Weather[0].Main;
+                dto.Description = openWeather.Weather[0].Description;
+                dto.Humidity = openWeather.Main.Humidity;
+                dto.Pressure = openWeather.Main.Pressure;
+                dto.Sunrise = openWeather.Sys.Sunrise;
+                dto.Sunset = openWeather.Sys.Sunset;
             }
 
             return dto;

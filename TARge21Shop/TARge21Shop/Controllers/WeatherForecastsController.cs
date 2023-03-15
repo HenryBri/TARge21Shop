@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TARge21Shop.ApplicationServices.Services;
 using TARge21Shop.Core.Dto.WeatherDtos;
 using TARge21Shop.Core.ServiceInterface;
 using TARge21Shop.Models.Weather;
@@ -72,6 +73,45 @@ namespace TARge21Shop.Controllers
             vm.NightPrecipitationType = dto.NightPrecipitationType;
             vm.NightPrecipitationIntensity = dto.NightPrecipitationIntensity;
 
+
+            return View(vm);
+        }
+        [HttpPost]
+        public IActionResult ShowWeatherDetails()
+        {
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("CityOpenWeather", "WeatherForecasts");
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CityOpenWeather()
+        {
+            OpenWeatherResultDto dto = new OpenWeatherResultDto();
+            _weatherForecastServices.OpenWeatherDetail(dto);
+            OpenWeatherViewModel vm = new OpenWeatherViewModel();
+
+            vm.Weathers = new OpenWeatherViewModel.Weather();
+            vm.Mains = new OpenWeatherViewModel.Main();
+            vm.Syss = new OpenWeatherViewModel.Sys();
+
+            vm.Weathers.Main = dto.Main;
+            vm.Weathers.Description = dto.Description;
+
+            vm.Mains.Temp = dto.Temp;
+            vm.Mains.Feels_like = dto.Feels_like;
+            vm.Mains.Humidity = dto.Humidity;
+            vm.Mains.Pressure = dto.Pressure;
+
+            vm.Syss.Id = dto.Id;
+            vm.Syss.Country = dto.Country;
+            vm.Syss.Sunrise = dto.Sunrise;
+            vm.Syss.Sunset = dto.Sunset;
+
+            vm.Name = dto.Name;
 
             return View(vm);
         }
