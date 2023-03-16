@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using TARge21Shop.Core.ServiceInterface;
 using TARge21Shop.ApplicationServices.Services;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace TARge21Shop.SpaceshipTest
 {
@@ -48,7 +49,7 @@ namespace TARge21Shop.SpaceshipTest
 
             services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
             services.AddScoped<IFilesServices, FilesServices>();
-            services.AddScoped<IWebHostEnvironment>();
+            services.AddScoped<IHostEnvironment, MockIHostEnvironment>();
 
             services.AddDbContext<TARge21ShopContext>(x =>
             {
